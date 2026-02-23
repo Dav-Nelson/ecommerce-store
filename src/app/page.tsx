@@ -25,7 +25,7 @@ export default function Home() {
         </Card>
 
         <p className="text-center text-sm text-gray-500">
-          shadcn/ui is working!
+          shadcn/ui is working, thanks to Nelson!
         </p>
       </div>
     </main>
