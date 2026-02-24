@@ -1,33 +1,43 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-6">
-      <h1 className="text-5xl font-bold text-gray-900 mb-8">
-        E-Commerce Store
-      </h1>
-
-      <div className="w-full max-w-md space-y-6">
-        {/* Example Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Welcome</CardTitle>
-            <CardDescription>
-              A full-stack e-commerce project built step by step
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input placeholder="Search products..." />
-            <Button className="w-full">Get Started</Button>
-          </CardContent>
-        </Card>
-
-        <p className="text-center text-sm text-gray-500">
-          shadcn/ui is working, thanks to Nelson!
+    <div className="container mx-auto py-12 px-4">
+      <div className="max-w-3xl mx-auto text-center">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+          Welcome to Our Store
+        </h1>
+        <p className="text-xl text-muted-foreground mb-10">
+          A full-stack e-commerce project built step by step with Next.js, shadcn/ui, and more.
         </p>
+
+        <div className="grid gap-8 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Browse Products</CardTitle>
+              <CardDescription>Discover our collection</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <a href="/products">View Products</a>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Cart</CardTitle>
+              <CardDescription>Ready to checkout?</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">
+                Go to Cart
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
