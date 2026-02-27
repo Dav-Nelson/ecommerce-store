@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Search, User } from "lucide-react";
 import Link from "next/link";
+import { auth } from "@/auth";
+import { UserButton } from "@/components/ui/user-button";  // We'll create a simple one. For now, make a basic user display (replace your current UserButton placeholder)
 
 const inter = Inter({ subsets: ["latin"] });
 
