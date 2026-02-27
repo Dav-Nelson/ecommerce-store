@@ -28,7 +28,7 @@ export default function RootLayout({
           <div className="container flex h-16 items-center justify-between">
             {/* Logo / Home link */}
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold tracking-tight">Store</span>
+              <span className="text-2xl font-bold tracking-tight">Nel Store</span>
             </Link>
 
             {/* Search (centered) */}
