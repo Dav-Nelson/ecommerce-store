@@ -5,8 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Search, User } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@/auth";
-import { UserButton } from "@/components/ui/user-button";  // We'll create a simple one. For now, make a basic user display (replace your current UserButton placeholder)
+import { auth, signOut } from "@/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,11 +14,13 @@ export const metadata: Metadata = {
   description: "Full-stack e-commerce learning project",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();  // Call once here (server component is async)
+
   return (
     <html lang="en">
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)}>
@@ -31,7 +32,7 @@ export default function RootLayout({
               <span className="text-2xl font-bold tracking-tight">Nel Store</span>
             </Link>
 
-            {/* Search (centered) */}
+            {/* Search (centered on desktop) */}
             <div className="hidden md:flex flex-1 justify-center max-w-md mx-8">
               <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -45,13 +46,15 @@ export default function RootLayout({
 
             {/* Right side actions */}
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" asChild>
+              {/* Mobile search icon */}
+              <Button variant="ghost" size="icon" asChild className="md:hidden">
                 <Link href="/search">
-                  <Search className="h-5 w-5 md:hidden" />
+                  <Search className="h-5 w-5" />
                   <span className="sr-only">Search</span>
                 </Link>
               </Button>
 
+              {/* Cart */}
               <Button variant="ghost" size="icon" asChild>
                 <Link href="/cart">
                   <ShoppingCart className="h-5 w-5" />
@@ -59,12 +62,40 @@ export default function RootLayout({
                 </Link>
               </Button>
 
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/account">
-                  <User className="h-5 w-5" />
-                  <span className="sr-only">Account</span>
-                </Link>
-              </Button>
+              {/* Auth section */}
+              {session?.user ? (
+                <div className="flex items-center space-x-3">
+                  {/* Optional: Add avatar later when you have image in session */}
+                  {/* <div className="h-8 w-8 rounded-full bg-gray-200" /> */}
+                  <span className="text-sm font-medium hidden sm:inline">
+                    {session.user.name ?? "User"}
+                  </span>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await signOut({ redirectTo: "/" });
+                    }}
+                  >
+                    <Button variant="outline" size="sm" type="submit">
+                      Sign Out
+                    </Button>
+                  </form>
+                </div>
+              ) : (
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/auth/signin">Sign In</Link>
+                </Button>
+              )}
+
+              {/* Account/Profile link (only show if signed in, optional) */}
+              {session?.user && (
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/account">
+                    <User className="h-5 w-5" />
+                    <span className="sr-only">Account</span>
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </header>
