@@ -46,7 +46,42 @@ const getProducts = async (req, res) => {
 // --- Routes ---
 app.post('/api/auth/register', register);
 app.post('/api/auth/login', login);
-app.get('/api/products', getProducts);
+const auth = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token' });
+    try {
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
+        next();
+    } catch { res.status(403).json({ error: 'Invalid token' }); }
+};
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Products API
+app.get('/api/products', getProducts);
+app.get('/api/products/:id', async (req, res) => {
+    const p = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
+    res.json(p.rows[0]);
+});
+
+// Admin API
+app.post('/api/products', auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    const { name, description, price, image_url, category_id } = req.body;
+    await pool.query('INSERT INTO products (name, description, price, image_url, category_id) VALUES ($1, $2, $3, $4, $5)', [name, description, price, image_url, category_id]);
+    res.status(201).json({ message: 'Product created' });
+});
+
+// Orders API
+app.post('/api/orders', auth, async (req, res) => {
+    const { total_price, items } = req.body;
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const o = await client.query('INSERT INTO orders (user_id, total_price) VALUES ($1, $2) RETURNING id', [req.user.id, total_price]);
+        for (const item of items) {
+            await client.query('INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)', [o.rows[0].id, item.id, item.quantity, item.price]);
+        }
+        await client.query('COMMIT');
+        res.status(201).json({ orderId: o.rows[0].id });
+    } catch (e) { await client.query('ROLLBACK'); res.status(500).json({ error: e.message }); }
+    finally { client.release(); }
+});
