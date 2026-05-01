@@ -3,13 +3,18 @@ import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
-// For now, mock user DB — we'll replace with Prisma later
-const users = [
+// Temporary in-memory user store (replace with Prisma soon)
+export const users: Array<{
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}> = [
   {
     id: "1",
     name: "Test User",
     email: "test@example.com",
-    password: bcrypt.hashSync("password123", 10), // hashed version
+    password: bcrypt.hashSync("password123", 10),
   },
 ];
 

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function SignIn() {
   return (
@@ -14,25 +15,21 @@ export default function SignIn() {
         </CardHeader>
         <CardContent>
           <form
-            action={async (formData) => {
+            action={async (formData: FormData) => {
               "use server";
+
               const email = formData.get("email") as string;
               const password = formData.get("password") as string;
 
-              const res = await signIn("credentials", {
+              // No redirect: false → Auth.js will redirect automatically on success
+              await signIn("credentials", {
                 email,
                 password,
-                redirect: false,
+                redirectTo: "/",  // Optional: force redirect here after success
               });
 
-              if (res?.error) {
-                // Simple error handling (improve later with toast)
-                console.error(res.error);
-                // For now, alert
-                alert("Invalid email or password");
-              } else {
-                window.location.href = "/";
-              }
+              // If we reach here, signIn failed → show error
+              // (But in practice, redirect happens server-side, so this won't run on success)
             }}
             className="space-y-4"
           >
@@ -48,6 +45,13 @@ export default function SignIn() {
               Sign In
             </Button>
           </form>
+
+         <p className="mt-4 text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/signup" className="text-primary hover:underline">
+              Sign Up
+            </Link>
+        </p>
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Test credentials: test@example.com / password123

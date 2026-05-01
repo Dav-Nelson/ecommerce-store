@@ -1,6 +1,6 @@
 import { User } from "lucide-react";
 
-export function UserButton({ user }: { user: any }) {
+export function UserButton({ user }: { user: { name: string } }) {
   return (
     <div className="flex items-center gap-2 border p-1 rounded-full px-3">
       <span className="text-sm font-medium">{user.name}</span>
